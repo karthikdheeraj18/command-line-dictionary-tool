@@ -64,6 +64,31 @@ function CheckSynAPI(word,api_host,api_key) {
     .catch((error) => { console.log(error) })
 }
 
+function CheckAntAPI(word,api_host,api_key) {
+    const info = fetch(`${api_host}/word/${word}/relatedWords?api_key=${api_key}`)
+    .then(response => {
+        //console.log(response.ok,response.status)
+        if (!response.ok) { throw response }
+            return response.json()
+    });
+
+    info.then(result => {
+        result.map(d => { 
+            if (d.relationshipType === 'antonym'){
+                //console.log(d.words)
+                printStatus('success')
+                console.log("WORD: ",word.toUpperCase())
+                d.words.map(data => {
+                    printStatus('divider')
+                    console.log('Antonym: ',data)
+                })
+                printStatus('end')
+            }
+        })
+    })
+    .catch((error) => { console.log(error) })
+}
+
 function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
     const types = ["defn", "syn", "ant", "ex", "play"];
     //var n = fruits.includes("Mango");
@@ -74,7 +99,7 @@ function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
         else if (defn_type === "syn")
             CheckSynAPI(word,api_host,api_key);
         else if (defn_type === "ant")
-            null//CheckAntAPI(word,api_host,api_key);
+            CheckAntAPI(word,api_host,api_key);
         else if (defn_type === "ex")
             null//CheckExAPI(word,api_host,api_key);
     }
