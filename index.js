@@ -89,6 +89,27 @@ function CheckAntAPI(word,api_host,api_key) {
     .catch((error) => { console.log(error) })
 }
 
+function CheckExAPI(word,api_host,api_key) {
+    const info = fetch(`${api_host}/word/${word}/examples?api_key=${api_key}`)
+    .then(response => {
+        //console.log(response.ok,response.status)
+        if (!response.ok) { throw response }
+            return response.json()
+    });
+
+    info.then(result => {
+        //console.log(result)
+        printStatus('success')
+        console.log("WORD: ",word.toUpperCase())
+        result.examples.map((d,idx) => { 
+            printStatus('divider')
+            console.log(`Example ${idx}: `,d.text)
+        })
+        printStatus('end')
+    })
+    .catch((error) => { console.log(error) })
+}
+
 function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
     const types = ["defn", "syn", "ant", "ex", "play"];
     //var n = fruits.includes("Mango");
@@ -101,7 +122,7 @@ function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
         else if (defn_type === "ant")
             CheckAntAPI(word,api_host,api_key);
         else if (defn_type === "ex")
-            null//CheckExAPI(word,api_host,api_key);
+            CheckExAPI(word,api_host,api_key);
     }
     else if (word == null){
         if (defn_type === "play")
