@@ -103,9 +103,24 @@ function CheckExAPI(word,api_host,api_key) {
         console.log("WORD: ",word.toUpperCase())
         result.examples.map((d,idx) => { 
             printStatus('divider')
-            console.log(`Example ${idx}: `,d.text)
+            console.log(`Example ${idx}:\n\n`,d.text)
         })
         printStatus('end')
+    })
+    .catch((error) => { console.log(error) })
+}
+
+function CheckRandomAPI(api_host,api_key) {
+    const info = fetch(`${api_host}/words/randomWord?api_key=${api_key}`)
+    .then(response => {
+        //console.log(response.ok,response.status)
+        if (!response.ok) { throw response }
+            return response.json()
+    });
+
+    info.then(result => {
+        //console.log(result)
+        CheckDefnAPI(result.word,api_host,api_key);
     })
     .catch((error) => { console.log(error) })
 }
@@ -127,10 +142,14 @@ function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
     else if (word == null){
         if (defn_type === "play")
             null//CheckPlayAPI(word,api_host,api_key);
-        else if(!types.includes(defn_type))
-            null//console.log(defn_type)
         else if(defn_type == null)
-            null//console.log('no command')
+            CheckRandomAPI(api_host,api_key)
+        else if(!types.includes(defn_type)){
+            CheckDefnAPI(defn_type,api_host,api_key);
+            CheckSynAPI(defn_type,api_host,api_key);
+            CheckAntAPI(defn_type,api_host,api_key);
+            CheckExAPI(defn_type,api_host,api_key);
+        }
         else{
             null//console.log("Test")
         }
