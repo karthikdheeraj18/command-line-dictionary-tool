@@ -38,7 +38,7 @@ function CheckDefnAPI(word,api_host,api_key) {
         })
         printStatus('end')
     })
-    .catch((error) => { console.log(error) })
+    .catch((error) => { console.log("\nWord Not Found!!\n") })
 }
 
 function CheckSynAPI(word,api_host,api_key) {
@@ -63,7 +63,7 @@ function CheckSynAPI(word,api_host,api_key) {
             }
         })
     })
-    .catch((error) => { console.log(error) })
+    .catch((error) => { console.log("\nWord Not Found!!\n") })
 }
 
 function CheckAntAPI(word,api_host,api_key) {
@@ -88,7 +88,7 @@ function CheckAntAPI(word,api_host,api_key) {
             }
         })
     })
-    .catch((error) => { console.log(error) })
+    .catch((error) => { console.log("\nWord Not Found!!\n") })
 }
 
 function CheckExAPI(word,api_host,api_key) {
@@ -109,7 +109,7 @@ function CheckExAPI(word,api_host,api_key) {
         })
         printStatus('end')
     })
-    .catch((error) => { console.log(error) })
+    .catch((error) => { console.log("\nWord Not Found!!\n") })
 }
 
 function CheckRandomAPI(api_host,api_key) {
