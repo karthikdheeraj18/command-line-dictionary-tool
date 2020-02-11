@@ -36,13 +36,14 @@ function CheckDefnAPI(word,api_host,api_key) {
     });
 
     info.then(result => {
-        printStatus('success')
+        printStatus('dict')
         console.log('WORD: ',word.toUpperCase())
-        result.map(d => { 
-            printStatus('divider')
-            console.log('Definition: ',d.text) 
+        printStatus('divider')
+        console.log('DEFINITIONS')
+        result.map( (d,idx) => { 
+            console.log(`Definition ${idx+1}: `,d.text) 
         })
-        printStatus('end')
+        printStatus('divider')
     })
     .catch((error) => { console.log('\nWord Not Found!!\n') })
 }
@@ -60,13 +61,14 @@ function CheckSynAPI(word,api_host,api_key) {
         result.map(d => { 
             if (d.relationshipType === 'synonym'){
                 //console.log(d.words)
-                printStatus('success')
+                printStatus('dict')
                 console.log('WORD: ',word.toUpperCase())
-                d.words.map(data => {
-                    printStatus('divider')
-                    console.log('Synonym: ',data)
+                printStatus('divider')
+                console.log('SYNONYMS')
+                d.words.map( (data,idx) => {
+                    console.log(`Synonym ${idx+1}: `,data)
                 })
-                printStatus('end')
+                printStatus('divider')
             }
         })
     })
@@ -86,13 +88,14 @@ function CheckAntAPI(word,api_host,api_key) {
         result.map(d => { 
             if (d.relationshipType === 'antonym'){
                 //console.log(d.words)
-                printStatus('success')
+                printStatus('dict')
                 console.log('WORD: ',word.toUpperCase())
-                d.words.map(data => {
-                    printStatus('divider')
-                    console.log('Antonym: ',data)
+                printStatus('divider')
+                console.log('ANTONYMS')
+                d.words.map( (data,idx) => {
+                    console.log(`Antonym ${idx+1}: `,data)
                 })
-                printStatus('end')
+                printStatus('divider')
             }
         })
     })
@@ -110,13 +113,13 @@ function CheckExAPI(word,api_host,api_key) {
 
     info.then(result => {
         //console.log(result)
-        printStatus('success')
+        printStatus('dict')
         console.log('WORD: ',word.toUpperCase())
         result.examples.map((d,idx) => { 
             printStatus('divider')
-            console.log(`Example ${idx}:\n\n`,d.text)
+            console.log(`Example ${idx+1}:\n\n`,d.text)
         })
-        printStatus('end')
+        printStatus('divider')
     })
     .catch((error) => { console.log('\nWord Not Found!!\n') })
 }
@@ -292,22 +295,22 @@ async function GetFullDict(word,api_host,api_key) {
 
         if (defns.length>0) printStatus('divider'), console.log('DEFINITIONS')
         defns.map( (d,idx) => {
-            console.log(`Definition ${idx}: `,d)
+            console.log(`Definition ${idx+1}: `,d)
         })
 
         if (syns.length>0) printStatus('divider'), console.log('SYNONYMS')
         syns.map( (d,idx) => {
-            console.log(`Synonym ${idx}: `,d)
+            console.log(`Synonym ${idx+1}: `,d)
         })
 
         if (ants.length>0) printStatus('divider'), console.log('ANTONYMS')
         ants.map( (d,idx) => {
-            console.log(`Antonym ${idx}: `,d)
+            console.log(`Antonym ${idx+1}: `,d)
         })
 
         if (exs.length>0) printStatus('divider')
         exs.map( (d,idx) => {
-            console.log(`Example ${idx}:\n\n`,d)
+            console.log(`Example ${idx+1}:\n\n`,d)
             printStatus('divider')
         })
     }
