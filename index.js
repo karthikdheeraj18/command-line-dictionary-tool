@@ -22,6 +22,8 @@ function printStatus(type){
         console.log('------------------------------------END OF RESULT!!------------------------------------\n')
     else if(type==='divider')
         console.log('---------------------------------------------------------------------------------------')
+    else if(type==='dict')
+        console.log('\n-------------------------------------DICTIONARY!!--------------------------------------')
 }
 
 //getting data from definition's API
@@ -130,7 +132,7 @@ function CheckRandomAPI(api_host,api_key) {
 
     info.then(result => {
         //console.log(result)
-        CheckDefnAPI(result.word,api_host,api_key);
+        GetFullDict(result.word,api_host,api_key);
     })
     .catch((error) => { console.log(error) })
 }
@@ -234,9 +236,10 @@ function CheckPlayAPI(api_host,api_key) {
                 process.stdout.write('Enter Input: ')
             } else if(data.trim() === '3'){
                 //3. Quit
-
-                console.log('\n\n\n\n');
-                process.exit();
+                const prom = GetFullDict(d[0],api_host,api_key)
+                prom.then(()=>{
+                    process.exit();
+                })
             } else
             {
                 //If user enters wrong input, show options
@@ -249,6 +252,66 @@ function CheckPlayAPI(api_host,api_key) {
         });
     })
     .catch((error) => { console.log(error) })
+}
+
+async function GetFullDict(word,api_host,api_key) {
+
+    const response2= await fetch(`${api_host}/word/${word}/definitions?api_key=${api_key}`)
+    const result_defn_data = await response2.json()
+    const response3= await fetch(`${api_host}/word/${word}/examples?api_key=${api_key}`)
+    const result_ex_data = await response3.json()
+    const response4= await fetch(`${api_host}/word/${word}/relatedWords?api_key=${api_key}`)
+    const result_rw_data = await response4.json()
+        
+    //Formatting data into arrays
+    let defns = []
+    if(Array.isArray(result_defn_data)===true)
+        defns = result_defn_data.map(d => d.text)
+    let exs = []
+    if(Array.isArray(result_ex_data.examples)===true)
+        exs = result_ex_data.examples.map(d => d.text)
+    let syns = []
+    let ants = []
+    //console.log(result_rw_data)
+    if(Array.isArray(result_rw_data)===true){
+        result_rw_data.map(d => {
+            if (d.relationshipType === 'synonym')
+                syns = d.words
+            if (d.relationshipType === 'antonym')
+                ants = d.words
+        })
+    }
+
+    
+    if(defns.length==0 && syns.length==0 && ants.length==0 && exs.length==0)
+        console.log('\nWord Not Found!!\n')
+    else{
+        //Printing Full Dictionary to console
+        printStatus('dict')
+        console.log('WORD: ',word.toUpperCase())
+
+        if (defns.length>0) printStatus('divider'), console.log('DEFINITIONS')
+        defns.map( (d,idx) => {
+            console.log(`Definition ${idx}: `,d)
+        })
+
+        if (syns.length>0) printStatus('divider'), console.log('SYNONYMS')
+        syns.map( (d,idx) => {
+            console.log(`Synonym ${idx}: `,d)
+        })
+
+        if (ants.length>0) printStatus('divider'), console.log('ANTONYMS')
+        ants.map( (d,idx) => {
+            console.log(`Antonym ${idx}: `,d)
+        })
+
+        if (exs.length>0) printStatus('divider')
+        exs.map( (d,idx) => {
+            console.log(`Example ${idx}:\n\n`,d)
+            printStatus('divider')
+        })
+    }
+
 }
 
 function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
@@ -276,11 +339,7 @@ function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
             CheckRandomAPI(api_host,api_key)
         else if(!types.includes(defn_type)){
             //defn_type here is a word entered
-
-            CheckDefnAPI(defn_type,api_host,api_key)
-            CheckSynAPI(defn_type,api_host,api_key);
-            CheckAntAPI(defn_type,api_host,api_key);
-            CheckExAPI(defn_type,api_host,api_key);
+            GetFullDict(defn_type,api_host,api_key)
         } else{
             console.log('error')
         }
