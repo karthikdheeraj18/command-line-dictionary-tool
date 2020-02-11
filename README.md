@@ -1,6 +1,6 @@
 # command-line-dictionary-tool
 
-The command-line tool should has the following functions - 
+The command-line tool has the following functions - 
 
 1. Word Definitions
 
