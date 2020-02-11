@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
+
 require('dotenv').config();
 const fetch = require('node-fetch')
 
+//configuring data from .env
 const api_host = process.env.API_HOST
 const api_key = process.env.API_KEY
+//getting data from command line arguments
 const defn_type = process.argv[2] || null;
 const word = process.argv[3] || null;
 
-const dictionary_store = []
-
+//for debugging
 //console.log(defn_type,word)
 
+//prints status on command line
 function printStatus(type){
     if (type==='success')
         console.log('\n---------------------------------------SUCCESS!!---------------------------------------')
@@ -21,6 +24,7 @@ function printStatus(type){
         console.log('---------------------------------------------------------------------------------------')
 }
 
+//getting data from definition's API
 function CheckDefnAPI(word,api_host,api_key) {
     const info = fetch(`${api_host}/word/${word}/definitions?api_key=${api_key}`)
     .then(response => {
@@ -31,16 +35,17 @@ function CheckDefnAPI(word,api_host,api_key) {
 
     info.then(result => {
         printStatus('success')
-        console.log("WORD: ",word.toUpperCase())
+        console.log('WORD: ',word.toUpperCase())
         result.map(d => { 
             printStatus('divider')
             console.log('Definition: ',d.text) 
         })
         printStatus('end')
     })
-    .catch((error) => { console.log("\nWord Not Found!!\n") })
+    .catch((error) => { console.log('\nWord Not Found!!\n') })
 }
 
+//getting data from relatedWords's API for synonyms
 function CheckSynAPI(word,api_host,api_key) {
     const info = fetch(`${api_host}/word/${word}/relatedWords?api_key=${api_key}`)
     .then(response => {
@@ -54,7 +59,7 @@ function CheckSynAPI(word,api_host,api_key) {
             if (d.relationshipType === 'synonym'){
                 //console.log(d.words)
                 printStatus('success')
-                console.log("WORD: ",word.toUpperCase())
+                console.log('WORD: ',word.toUpperCase())
                 d.words.map(data => {
                     printStatus('divider')
                     console.log('Synonym: ',data)
@@ -63,9 +68,10 @@ function CheckSynAPI(word,api_host,api_key) {
             }
         })
     })
-    .catch((error) => { console.log("\nWord Not Found!!\n") })
+    .catch((error) => { console.log('\nWord Not Found!!\n') })
 }
 
+//getting data from relatedWords's API for antonyms
 function CheckAntAPI(word,api_host,api_key) {
     const info = fetch(`${api_host}/word/${word}/relatedWords?api_key=${api_key}`)
     .then(response => {
@@ -79,7 +85,7 @@ function CheckAntAPI(word,api_host,api_key) {
             if (d.relationshipType === 'antonym'){
                 //console.log(d.words)
                 printStatus('success')
-                console.log("WORD: ",word.toUpperCase())
+                console.log('WORD: ',word.toUpperCase())
                 d.words.map(data => {
                     printStatus('divider')
                     console.log('Antonym: ',data)
@@ -88,9 +94,10 @@ function CheckAntAPI(word,api_host,api_key) {
             }
         })
     })
-    .catch((error) => { console.log("\nWord Not Found!!\n") })
+    .catch((error) => { console.log('\nWord Not Found!!\n') })
 }
 
+//getting data from example's API
 function CheckExAPI(word,api_host,api_key) {
     const info = fetch(`${api_host}/word/${word}/examples?api_key=${api_key}`)
     .then(response => {
@@ -102,16 +109,17 @@ function CheckExAPI(word,api_host,api_key) {
     info.then(result => {
         //console.log(result)
         printStatus('success')
-        console.log("WORD: ",word.toUpperCase())
+        console.log('WORD: ',word.toUpperCase())
         result.examples.map((d,idx) => { 
             printStatus('divider')
             console.log(`Example ${idx}:\n\n`,d.text)
         })
         printStatus('end')
     })
-    .catch((error) => { console.log("\nWord Not Found!!\n") })
+    .catch((error) => { console.log('\nWord Not Found!!\n') })
 }
 
+//getting data from randomWord's API
 function CheckRandomAPI(api_host,api_key) {
     const info = fetch(`${api_host}/words/randomWord?api_key=${api_key}`)
     .then(response => {
@@ -127,6 +135,7 @@ function CheckRandomAPI(api_host,api_key) {
     .catch((error) => { console.log(error) })
 }
 
+//getting data from relatedWords's API for Command Line Game
 function CheckPlayAPI(api_host,api_key) {
     const info = fetch(`${api_host}/words/randomWord?api_key=${api_key}`)
     .then(response => {
@@ -170,6 +179,7 @@ function CheckPlayAPI(api_host,api_key) {
 
         return [result.word,defns,syns,ants]
     }).then(d => {
+        //declaring defitions,synonyms and antonyms variables for getting data dynamically(later)
         let randomDefn, randomSyn, randomAnt
 
         // Get process.stdin as the standard input object.
@@ -179,52 +189,58 @@ function CheckPlayAPI(api_host,api_key) {
         standard_input.setEncoding('utf-8');
 
         // Prompt user to input data in console.
-        console.log("\nGuess the word with above information\n");
+        console.log('\nGuess the word with above information\n');
         process.stdout.write('Enter Input: ')
 
         // When user input data and click enter key.
         standard_input.on('data', function (data) {
-            data = data.trim()
             // User input exit.
+
+            //trimming data for eliminating whitespaces before and after
+            data = data.trim()
+
             if(data === d[0]){
-                console.log("\n\n\n\n");
-                console.log("-------------------------------");
-                console.log("------------SUCCESS------------");
-                console.log("-------------------------------");
-                console.log("\n\n\n\n");
+                //if user data matches with random api data, show success message
+                console.log('\n\n\n\n');
+                console.log('-------------------------------');
+                console.log('------------SUCCESS------------');
+                console.log('-------------------------------');
+                console.log('\n\n\n\n');
                 process.exit();
-            }
-            else if(data.trim() === '1'){
-                console.log("\nGuess the word with above information\n")
+            } else if(data.trim() === '1'){
+                //1. Try Again
+                console.log('\nGuess the word with above information\n')
                 process.stdout.write('Enter Input: ')
-            }
-            else if(data.trim() === '2'){
+            } else if(data.trim() === '2'){
+                //2. Hint
+
+                //Deciding Hint options by random
                 let which_hint = Math.floor(Math.random()*4)
                 if(which_hint === 0){
-                    var arr = d[0].split('');           // Convert String to array
+                    var arr = d[0].split('');
                     arr.sort(() => (0.5 - Math.random()) );  
                     let res = arr.join('');
                     console.log('Hint(word shuffled): ',res,'\n')
-                }
-                else if(which_hint===2 && (randomSyn||null)!==null ) {
+                } else if(which_hint===2 && (randomSyn||null)!==null ) {
                     randomSyn  = d[2][Math.floor(Math.random() * d[2].length)]
                     console.log('Hint(synonym): ',randomSyn,'\n')
-                }
-                else if(which_hint===3 && (randomAnt||null)!==null) {
+                } else if(which_hint===3 && (randomAnt||null)!==null) {
                     randomAnt  = d[3][Math.floor(Math.random() * d[3].length)]
                     console.log('Hint(antonym): ',randomAnt,'\n')
-                }
-                else{
+                } else{
                     randomDefn = d[1][Math.floor(Math.random() * d[1].length)]
                     console.log('Hint(definition): ',randomDefn,'\n')
                 }
                 process.stdout.write('Enter Input: ')
-            }
-            else if(data.trim() === '3'){
-                console.log("\n\n\n\n");
+            } else if(data.trim() === '3'){
+                //3. Quit
+
+                console.log('\n\n\n\n');
                 process.exit();
-            }else
+            } else
             {
+                //If user enters wrong input, show options
+
                 console.log('\n1. Try again')
                 console.log('2. Hint')
                 console.log('3. Quit\n')
@@ -236,31 +252,37 @@ function CheckPlayAPI(api_host,api_key) {
 }
 
 function ResolveDefinitionTypes(defn_type, word, api_host, api_key) {
-    const types = ["defn", "syn", "ant", "ex", "play"];
+    const types = ['defn', 'syn', 'ant', 'ex', 'play'];
     
-    if (word != null){
-        if (defn_type === "defn")
+    if (word !== null){
+        //If word is entered(definition type entered included)
+
+        if (defn_type === 'defn')
             CheckDefnAPI(word,api_host,api_key);
-        else if (defn_type === "syn")
+        else if (defn_type === 'syn')
             CheckSynAPI(word,api_host,api_key);
-        else if (defn_type === "ant")
+        else if (defn_type === 'ant')
             CheckAntAPI(word,api_host,api_key);
-        else if (defn_type === "ex")
+        else if (defn_type === 'ex')
             CheckExAPI(word,api_host,api_key);
-    }
-    else if (word == null){
-        if (defn_type === "play")
+    } else if (word === null){
+        //If word is not entered(definition type entered/not entered/definition type as word)
+
+        if (defn_type === 'play')
+            //command line game
             CheckPlayAPI(api_host,api_key);
         else if(defn_type == null)
+            //getting a random word definition
             CheckRandomAPI(api_host,api_key)
         else if(!types.includes(defn_type)){
+            //defn_type here is a word entered
+
             CheckDefnAPI(defn_type,api_host,api_key)
             CheckSynAPI(defn_type,api_host,api_key);
             CheckAntAPI(defn_type,api_host,api_key);
             CheckExAPI(defn_type,api_host,api_key);
-        }
-        else{
-            null//console.log("Test")
+        } else{
+            console.log('error')
         }
     }
     
