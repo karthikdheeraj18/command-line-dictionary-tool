@@ -1,3 +1,4 @@
 node_modules
 .env
 setup.txt
+test_commands.txt

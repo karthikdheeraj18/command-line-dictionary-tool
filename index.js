@@ -195,11 +195,11 @@ function CheckPlayAPI(api_host,api_key) {
         // When user input data and click enter key.
         standard_input.on('data', function (data) {
             // User input exit.
-
+            
             //trimming data for eliminating whitespaces before and after
             data = data.trim()
 
-            if(data === d[0]){
+            if(data === d[0] || d[2].includes(data) ){
                 //if user data matches with random api data, show success message
                 console.log('\n\n\n\n');
                 console.log('-------------------------------');
